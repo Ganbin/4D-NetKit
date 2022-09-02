@@ -34,6 +34,8 @@ Class constructor($OAuth2 : cs:C1710.OAuth2BaseProvider)
 			
 			This:C1470.timeout:=$OAuth2.timeout
 			
+			This:C1470.progressBar:=cs:C1710.ProgressBar.new()
+			
 		End if 
 	Else 
 		ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_parameters"))
@@ -74,13 +76,19 @@ Function _OpenBrowserForAuthorisation()->$authorizationCode : Text
 				Storage:C1525.params:=New shared object:C1526("redirectURI"; This:C1470.redirectURI)
 			End use 
 			
+			This:C1470.progressBar.show(Get localized string:C991("OAuth2_ProgressBar_Title"); -1; Get localized string:C991("OAuth2_ProgressBar_Message"))
+			This:C1470.progressBar.setIcon(Get 4D folder:C485(Current resources folder:K5:16)+"Oauth_logo.svg")
+			This:C1470.progressBar.setStopButton(True:C214)
+			
 			OPEN URL:C673($url; *)
 			
 			var $endTime : Integer
 			$endTime:=Milliseconds:C459+(This:C1470.timeout*1000)
-			While ((Milliseconds:C459<=$endTime) & (Not:C34(OB Is defined:C1231(Storage:C1525; "token")) | (Storage:C1525.token=Null:C1517)))
+			While ((Milliseconds:C459<=$endTime) & (Not:C34(OB Is defined:C1231(Storage:C1525; "token")) | (Storage:C1525.token=Null:C1517))) & (This:C1470.progressBar.isStopped()=False:C215)
 				DELAY PROCESS:C323(Current process:C322; 10)
 			End while 
+			
+			This:C1470.progressBar.close()
 			
 			Use (Storage:C1525)
 				If (OB Is defined:C1231(Storage:C1525; "token"))

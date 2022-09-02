@@ -89,6 +89,18 @@
           <source>The port {PORT} is already used.</source>
           <target>The port {PORT} is already used.</target>
         </trans-unit>
+        <trans-unit resname="OAuth2_AuthorizationCode_is_empty">
+          <source>No authorizationCode returned.</source>
+          <target>No authorizationCode returned.</target>
+        </trans-unit>
+        <trans-unit resname="OAuth2_ProgressBar_Title">
+          <source>OAuth2 authentication process</source>
+          <target>OAuth2 authentication process</target>
+        </trans-unit>
+        <trans-unit resname="OAuth2_ProgressBar_Message">
+          <source>Waiting the response from the browser...</source>
+          <target>Waiting the response from the browser...</target>
+        </trans-unit>
       </group>
     </body>
   </file>
