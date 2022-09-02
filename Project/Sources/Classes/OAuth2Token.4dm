@@ -1,5 +1,4 @@
 Class constructor($inParameter : Object)
-	
 	var $params : Object
 	$params:=Null:C1517
 	If (Count parameters:C259>0)

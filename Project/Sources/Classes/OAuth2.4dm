@@ -1,4 +1,4 @@
-Class constructor($OAuth2 : cs:C1710.OAuth2BaseProvider)
+Class constructor($OAuth2 : cs:C1710.OAuth2BaseProvider; $logger : cs:C1710.Logger)
 	
 	If (OB Instance of:C1731($OAuth2; cs:C1710.OAuth2BaseProvider))  // can be cs.OAuth2Base or any extended class
 		
@@ -36,9 +36,18 @@ Class constructor($OAuth2 : cs:C1710.OAuth2BaseProvider)
 			
 			This:C1470.progressBar:=cs:C1710.ProgressBar.new()
 			
+			If (Count parameters:C259=2)
+				This:C1470.logger:=$logger
+			Else 
+				This:C1470.logger:=cs:C1710.Logger.new()
+			End if 
+			
+			This:C1470.logger.setLevel("trace")
+			This:C1470.logger.setContext("Oauth2")
+			
 		End if 
 	Else 
-		ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_parameters"))
+		ALERT:C41(Get localized string:C991("OAuth2_Undefined_parameters"))
 	End if 
 	
 	// ----------------------------------------------------
@@ -52,7 +61,7 @@ Function _OpenBrowserForAuthorisation()->$authorizationCode : Text
 	
 	// You must add your own provider here if needed
 	If ($provider#"OAuth2") & ($provider#"Microsoft")
-		ASSERT:C1129(False:C215; $provider+" : "+Get localized string:C991("OAuth2_Unsupported_Provider"))
+		ALERT:C41($provider+" : "+Get localized string:C991("OAuth2_Unsupported_Provider"))
 		
 	Else 
 		
@@ -141,13 +150,12 @@ Function _getToken_SignedIn($bUseRefreshToken : Boolean)->$result : Object
 				
 			Else 
 				
-				ASSERT:C1129(False:C215; Replace string:C233(Get localized string:C991("OAuth2_Port_Already_Used"); "{PORT}"; String:C10($port)))
+				ALERT:C41(Replace string:C233(Get localized string:C991("OAuth2_Port_Already_Used"); "{PORT}"; String:C10($port)))
 				
 			End if 
 		End if 
 		
-		If (Asserted:C1132(Length:C16($authorizationCode)>0; "authorizationCode is empty!"))
-			
+		If (Length:C16($authorizationCode)>0)
 			$params:="client_id="+This:C1470.clientId+\
 				"&scope="+_urlEscape(This:C1470.scope)+\
 				"&code="+$authorizationCode+\
@@ -159,6 +167,7 @@ Function _getToken_SignedIn($bUseRefreshToken : Boolean)->$result : Object
 			
 		Else 
 			
+			ALERT:C41(Get localized string:C991("OAuth2_AuthorizationCode_is_empty"))
 			$bSendRequest:=False:C215
 			
 		End if 
@@ -200,7 +209,7 @@ Function getToken()->$result : Object
 	
 	// You must add your own provider here if needed
 	If ($provider#"OAuth2") & ($provider#"Microsoft")
-		ASSERT:C1129(False:C215; $provider+" : "+Get localized string:C991("OAuth2_Unsupported_Provider"))
+		ALERT:C41($provider+" : "+Get localized string:C991("OAuth2_Unsupported_Provider"))
 		
 	Else 
 		var $bUseRefreshToken : Boolean
@@ -270,15 +279,16 @@ Function _sendTokenRequest($params : Text)->$result : Object
 	$status:=HTTP Request:C1158(HTTP POST method:K71:2; This:C1470.tokenURI; $request; $response; $names; $values)
 	ON ERR CALL:C155($savedMethod)
 	
-	If (Asserted:C1132(($status=200); Get localized string:C991("OAuth2_Error_Wrong_Status_Code")+String:C10($status)+"\r\n"+\
-		$response))
-		
-		If (Asserted:C1132(Length:C16($response)>0; Get localized string:C991("OAuth2_Error_Empty_Token_Response")))
-			
+	If ($status=200)
+		If (Length:C16($response)>0)
 			$result:=cs:C1710.OAuth2Token.new()
 			$result._loadFromResponse($response)
-			
+		Else 
+			This:C1470.logger.error("Status 200 but empty token response")
+			ALERT:C41(Get localized string:C991("OAuth2_Error_Empty_Token_Response"))
 		End if 
-		
+	Else 
+		This:C1470.logger.error("Cannot get the token, status code: {status}. Response: {response}"; New object:C1471("status"; $status; "response"; $response))
+		ALERT:C41(Get localized string:C991("OAuth2_Error_Wrong_Status_Code")+String:C10($status)+"\r\n"+$response)
 	End if 
 	

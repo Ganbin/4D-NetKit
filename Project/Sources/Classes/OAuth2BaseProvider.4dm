@@ -83,28 +83,28 @@ Function checkPrerequisites()->$OK : Boolean
 	
 	Case of 
 		: (This:C1470.name="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_provider"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_provider"))
 			
 		: (This:C1470.clientId="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_clientId"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_clientId"))
 			
 		: (This:C1470.redirectURI="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_redirectURI"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_redirectURI"))
 			
 		: (This:C1470.authenticateURI="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_authenticateURI"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_authenticateURI"))
 			
 		: (This:C1470.tokenURI="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_tokenURI"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_tokenURI"))
 			
 		: (This:C1470.permission="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_permission"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_permission"))
 			
 		: (This:C1470.permission#"signedIn") & (This:C1470.permission#"service")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Unsupported_permission"))
+			ALERT:C41(Get localized string:C991("OAuth2_Unsupported_permission"))
 			
 		: (This:C1470.permission="signedIn") & (This:C1470.redirectURI="")
-			ASSERT:C1129(False:C215; Get localized string:C991("OAuth2_Undefined_redirectURI"))
+			ALERT:C41(Get localized string:C991("OAuth2_Undefined_redirectURI"))
 			
 		Else 
 			$OK:=True:C214
